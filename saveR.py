@@ -15,7 +15,6 @@ __license__ = "GPL"
 
 save_R_marshak_planar_1_analytic('Rn__1-0_analytic.npz',500)
 
-# save_R_marshak_planar(1.0,'Rn__1-0.npz',500)
 save_R_marshak_planar(1.33,'Rn__1-33.npz',500)
 save_R_marshak_planar(1.4,'Rn__1-4.npz',500)
 save_R_marshak_planar(1.5,'Rn__1-5.npz',300)

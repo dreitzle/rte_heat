@@ -5,7 +5,6 @@
 
 import numpy as np
 
-#from fresnel import calc_R_marshak as calc_R
 from fresnel import calc_R_P3
 from fresnel import calc_R_P1
 
@@ -62,12 +61,14 @@ class RTE_P3:
         iq = 1j*q
         q2 = q*q
 
+        # Eigenvalues
         W = np.empty((4,)+q.shape)
         W[0] = np.sqrt(q2+D[0])
         W[1] = np.sqrt(q2+D[1])
         W[2] = np.sqrt(q2+D[2])
         W[3] = np.sqrt(q2+D[3])
 
+        # Eigenvector components (last component is not needed)
         V = np.zeros(((4,9)+q.shape),dtype=np.complex)
 
         V[0,0] = np.sqrt(7.0)/42.0*(27.0*s1+28.0*s3)*D[0] - 2.5*np.sqrt(7.0)*s123
@@ -113,6 +114,8 @@ class RTE_P3:
         V[3,7] = -0.5*(2.0*D[3]+q2)*np.sqrt(7.0)*s3
         V[3,8] = -0.5*W[3]*(2.0*D[3]+3.0*q2)
         #V[3,9] = -1j*q*np.sqrt(6.0)/4.0*(2.0*D[3]+q2)
+        
+        # Partial analytic LU decomposition for particular solution system
 
         muc = mut/mu0 + iq*np.sqrt(1.0-mu0*mu0)/mu0*np.cos(phiq)
         muc2 = muc*muc
@@ -210,6 +213,7 @@ class RTE_P3:
 
         h00 = -muc/np.sqrt(3.0) - (h04*h40 + h07*h70 + h08*h80 + h09*h90)
 
+        # particular solution components
         H = np.empty(((10,)+np.broadcast(q,phiq).shape),dtype=np.complex)
 
         phi = np.arccos(mu0)
@@ -286,9 +290,11 @@ class RTE_P1:
         iq = 1j*q
         q2 = q*q
 
+        # Eigenvalue
         W = np.empty((1,)+q.shape)
         W[0] = np.sqrt(q2+D*D)
 
+        # Eigenvector components
         V = np.zeros(((1,3)+q.shape),dtype=np.complex)
 
         V[0,0] = -np.sqrt(3.0)*s1
@@ -298,6 +304,7 @@ class RTE_P1:
         muc = mut/mu0 + iq*np.sqrt(1.0-mu0*mu0)/mu0*np.cos(phiq)
         muc2 = muc*muc
 
+        # Analytic LU decomposition for particular solution system
         h11 = s1
         #h12 = 0
         h13 = -iq/np.sqrt(6.0)
@@ -308,6 +315,7 @@ class RTE_P1:
         h32 = -muc/(np.sqrt(3.0)*s1)
         h33 = s0+(q2-muc2)/(3.0*s1)
 
+        # particular solution components
         H = np.empty(((3,)+np.broadcast(q,phiq).shape),dtype=np.complex)
 
         phi = np.arccos(mu0)
@@ -450,32 +458,6 @@ def get_calc_c_marshak_3L_P1(n):
 
         mbc[5,4] = (-ev3[0,0]*R[0,0]+ev3[0,1]*R[1,0])*ex3
         mbc[5,5] = -ev3[0,0]*R[0,0]-ev3[0,1]*R[1,0]
-
-
-        # Upper boundary
-        #~ mbc[0:b,0:b] = np.transpose(ev1.dot(R))
-        #~ mbc[0:b,b:2*b] = np.transpose((ev1*m1l).dot(R))*ex1
-        # Boundary Layer 1 -> Layer 2
-        #~ mbc[b:2*b,0:b] = np.transpose(ev1.dot(T))*ex1
-        #~ mbc[b:2*b,b:2*b] = np.transpose((ev1*m1l).dot(T))
-        #~ mbc[b:2*b,2*b:3*b] = -np.transpose(ev2.dot(T))
-        #~ mbc[b:2*b,3*b:4*b] = -np.transpose((ev2*m1l).dot(T))*ex2
-        #~ mbc[2*b:3*b,0:b] = np.transpose(ev1.dot(Ts))*ex1
-        #~ mbc[2*b:3*b,b:2*b] = np.transpose((ev1*m1l).dot(Ts))
-        #~ mbc[2*b:3*b,2*b:3*b] = -np.transpose(ev2.dot(Ts))
-        #~ mbc[2*b:3*b,3*b:4*b] = -np.transpose((ev2*m1l).dot(Ts))*ex2
-        # Boundary Layer 2 -> Layer 3
-        #~ mbc[3*b:4*b,2*b:3*b] = np.transpose(ev2.dot(T))*ex2
-        #~ mbc[3*b:4*b,3*b:4*b] = np.transpose((ev2*m1l).dot(T))
-        #~ mbc[3*b:4*b,4*b:5*b] = -np.transpose(ev3.dot(T))
-        #~ mbc[3*b:4*b,5*b:6*b] = -np.transpose((ev3*m1l).dot(T))*ex3
-        #~ mbc[4*b:5*b,2*b:3*b] = np.transpose(ev2.dot(Ts))*ex2
-        #~ mbc[4*b:5*b,3*b:4*b] = np.transpose((ev2*m1l).dot(Ts))
-        #~ mbc[4*b:5*b,4*b:5*b] = -np.transpose(ev3.dot(Ts))
-        #~ mbc[4*b:5*b,5*b:6*b] = -np.transpose((ev3*m1l).dot(Ts))*ex3
-        # Lower bondary
-        #~ mbc[5*b:6*b,4*b:5*b] = -np.transpose((ev3*m1l).dot(R))*ex3
-        #~ mbc[5*b:6*b,5*b:6*b] = -np.transpose(ev3.dot(R))
 
         rbc = np.transpose(np.concatenate([
             -eps1.dot(R),

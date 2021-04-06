@@ -16,7 +16,7 @@ from RTE_common import get_calc_c_marshak_3L_P3
 from RTE_common import get_calc_c_marshak_3L_P1
 
 import matplotlib.pyplot as plt
-from tikzplotlib import save as tikz_save
+# from tikzplotlib import save as tikz_save
 
 __author__ = "Dominik Reitzle"
 __copyright__ = "Copyright 2021, ILM"
@@ -56,7 +56,7 @@ print("Planar PN Order : P%d"%N)
 
 mu0 = np.sqrt(1.0 - (1.0/(n*n)*(1.0-mu1*mu1)))
 
-####
+# %% Calculate PN coefficients
 
 calc_c = get_calc_c_marshak_3L(coeff_file,'Rn__1-0_analytic.npz',NN)
 
@@ -79,7 +79,7 @@ c_rev = calc_c(L3,mut3,ew3,ev3,eps3,
                     L1,mut1,ew1,ev1,eps1*np.exp(-mut3/mu0*L3-mut2/mu0*L2),
                     mu0)
 
-#####
+# %% Calculate P3 coefficients
 
 calc_c_p3 = get_calc_c_marshak_3L_P3(n)
 
@@ -101,7 +101,7 @@ c_rev_p3 = calc_c_p3(L3,mut3_p3,ew3_p3,ev3_p3,eps3_p3,
                     L1,mut1_p3,ew1_p3,ev1_p3,eps1_p3*np.exp(-mut3_p3*L3-mut2_p3*L2)
                     )
 
-####
+# %% Calculate P1 coefficients
 
 calc_c_p1 = get_calc_c_marshak_3L_P1(n)
 
@@ -123,7 +123,7 @@ c_rev_p1 = calc_c_p1(L3,mut3_p1,ew3_p1,ev3_p1,eps3_p1,
                     L1,mut1_p1,ew1_p1,ev1_p1,eps1_p1*np.exp(-mut3_p1*L3-mut2_p1*L2)
                     )
 
-###
+# %% Calculate sources
 
 R0 = Rfres(n,mu0)
 
@@ -165,7 +165,7 @@ Ps2_p3 = np.abs(Qu_p3)
 Ps1_p1 = np.abs(Qo_p1)
 Ps2_p1 = np.abs(Qu_p1)
 
-### P1 total
+# %% P1 total
 
 print("P1 upper source strength: %f " % Ps1_p1)
 print("P1 lower source strength: %f " % Ps2_p1)
@@ -217,7 +217,7 @@ print("P1 Layer 2 Absorbance: %f" % np.abs(A2_p1+B2_p1))
 print("P1 Layer 3 Absorbance: %f" % np.abs(A3_p1+B1_p1))
 print("P1 Total: %0.14f" % np.abs(Ro_p1+R1_p1+R2_p1+Ru_p1+T1_p1+T2_p1+A1_p1+A2_p1+A3_p1+B1_p1+B2_p1+B3_p1))
 
-### P3 total
+# %% P3 total
 
 print("P3 upper source strength: %f " % Ps1_p3)
 print("P3 lower source strength: %f " % Ps2_p3)
@@ -269,7 +269,7 @@ print("P3 Layer 2 Absorbance: %f" % np.abs(A2_p3+B2_p3))
 print("P3 Layer 3 Absorbance: %f" % np.abs(A3_p3+B1_p3))
 print("P3 Total: %0.14f" % np.abs(Ro_p3+R1_p3+R2_p3+Ru_p3+T1_p3+T2_p3+A1_p3+A2_p3+A3_p3+B1_p3+B2_p3+B3_p3))
 
-# PN total
+# %% PN total
 
 print("PN upper source strength: %f " % Ps1)
 print("PN lower source strength: %f " % Ps2)
@@ -328,7 +328,7 @@ z1 = np.linspace(0,L1,1000)
 z2 = np.linspace(0,L2,1000)
 z3 = np.linspace(0,L3,1000)
 
-# P1 fluence
+# %% P1 fluence
 
 i = 0
 i2 = 1
@@ -348,7 +348,7 @@ K2l_p1 = Ps2_p1*(np.sqrt(4.0*np.pi)*(K2l_p1+eps2_p1[0]*np.exp(-mut3_p1*L3-mut2_p
 K1l_p1 = Ps2_p1*(np.sqrt(4.0*np.pi)*(K1l_p1+eps1_p1[0]*np.exp(-mut3_p1*L3-mut2_p1*L2-mut1_p1*(L1-z1))) + np.exp(-mut3_p1*L3-mut2_p1*L2-mut1_p1*(L1-z1))/mu0)
 
 
-# P3 fluence
+# %% P3 fluence
 
 K1u_p3 = np.zeros_like(z1,dtype=np.complex)
 K2u_p3 = np.zeros_like(z2,dtype=np.complex)
@@ -374,7 +374,7 @@ K3l_p3 = Ps2_p3*(np.sqrt(4.0*np.pi)*(K3l_p3+eps3_p3[0]*np.exp(-mut3_p3*(L3-z3)))
 K2l_p3 = Ps2_p3*(np.sqrt(4.0*np.pi)*(K2l_p3+eps2_p3[0]*np.exp(-mut3_p3*L3-mut2_p3*(L2-z2))) + np.exp(-mut3_p3*L3-mut2_p3*(L2-z2))/mu0)
 K1l_p3 = Ps2_p3*(np.sqrt(4.0*np.pi)*(K1l_p3+eps1_p3[0]*np.exp(-mut3_p3*L3-mut2_p3*L2-mut1_p3*(L1-z1))) + np.exp(-mut3_p3*L3-mut2_p3*L2-mut1_p3*(L1-z1))/mu0)
 
-# PN fluence
+# %% PN fluence
 
 K1u = np.zeros_like(z1)
 K2u = np.zeros_like(z2)
@@ -400,7 +400,7 @@ K3l = Ps2*(np.sqrt(4.0*np.pi)*(K3l+eps3[0]*np.exp(-mut3/mu0*(L3-z3))) + np.exp(-
 K2l = Ps2*(np.sqrt(4.0*np.pi)*(K2l+eps2[0]*np.exp(-mut3/mu0*L3-mut2/mu0*(L2-z2))) + np.exp(-mut3/mu0*L3-mut2/mu0*(L2-z2))/mu0)
 K1l = Ps2*(np.sqrt(4.0*np.pi)*(K1l+eps1[0]*np.exp(-mut3/mu0*L3-mut2/mu0*L2-mut1/mu0*(L1-z1))) + np.exp(-mut3/mu0*L3-mut2/mu0*L2-mut1/mu0*(L1-z1))/mu0)
 
-# correction
+# %% Correction
 
 corr1_p3 = (A1+B3)/np.abs(A1_p3+B3_p3)
 corr2_p3 = (A2+B2)/np.abs(A2_p3+B2_p3)
@@ -418,7 +418,7 @@ abs_p3_cor = np.concatenate([corr1_p3*mua1*(K1u_p3+K1l_p3),corr2_p3*mua2*(K2u_p3
 abs_p1 = np.concatenate([mua1*(K1u_p1+K1l_p1),mua2*(K2u_p1+K2l_p1),mua3*(K3u_p1+K3l_p1)])
 abs_p1_cor = np.concatenate([corr1_p1*mua1*(K1u_p1+K1l_p1),corr2_p1*mua2*(K2u_p1+K2l_p1),corr3_p1*mua3*(K3u_p1+K3l_p1)])
 
-# plot
+# %% plot
 
 SMALL_SIZE = 24
 MEDIUM_SIZE = 28
@@ -450,5 +450,5 @@ ax.set_xlim([0.0,5.0])
 
 ax.legend(loc='upper right')
 
-#~ tikz_save('skin_fluence_60.tex',strict=True)
+# tikz_save('skin_fluence_60.tex',strict=True)
 plt.show()

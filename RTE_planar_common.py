@@ -65,6 +65,7 @@ class calc_RTE:
             self.eps = None
 
     def calc_ew(self,beta):
+        """ Compute eigenvalues """
 
         if self.NN == 0:
             return np.atleast_1d(beta[0])
@@ -79,6 +80,7 @@ class calc_RTE:
         return np.sqrt(d)
 
     def calc_ev(self,beta,ew):
+        """ Compute eigenvector components to given eigenvalue """
 
         N = self.N
 
@@ -97,6 +99,7 @@ class calc_RTE:
         return ev/np.sqrt(self.sigma)
 
     def calc_eps(self,mu0):
+        """ Compute particular solution components """
 
         N = self.N
 
@@ -116,4 +119,5 @@ class calc_RTE:
         return eps
 
     def get_res(self):
+        """ Return all results """
         return self.mut,self.ew,self.ev,self.eps

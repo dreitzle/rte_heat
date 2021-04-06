@@ -67,6 +67,7 @@ h2 = 0.0
 
 rte_heat = rte_heat_3L(layer1,layer2,layer3,h1,h2,mu1=mu1,NN=NN,n=1.4,Rn_file_n='Rn__1-4.npz')
 
+# Set z
 calcfn_b = partial(rte_heat_3L.calc_laplace, rte_heat, z=0.0)
 # calcfn_b = partial(rte_heat_3L.calc_laplace, rte_heat, z=4.0)
 
@@ -87,6 +88,8 @@ Nphi = 80
 def profile(q, phi):
     return np.exp(-0.125*q*q*rw*rw*(np.sin(phi)**2+(np.cos(phi)/mu1)**2))
 
+# %% Compute solution
+
 Nr = 400
 rm = 5.0
 xx = np.linspace(-rm,rm,Nr)
@@ -105,7 +108,27 @@ res_p1 = Q*ILT_IFT_hyperbolic(calcfn_b, profile, xx[:,None,None], 0.0, 15.0, Ns,
 stop = time.perf_counter()
 print("P1 time: %f" % (stop-start))
 
-########
+# %% Read numerical reference solution data
+
+# numdata = np.load('numerical_data/data_60d_short.npz')
+numdata = np.load('numerical_data/data_60d_long.npz')
+
+timeindex = 5
+time = numdata['t'][timeindex]
+print('Time: {} s'.format(time))
+
+zindex = 0
+# zindex = 40
+
+z = numdata['z'][zindex]
+print('Depth: {} mm'.format(z))
+
+x = numdata['x'][::2]
+
+data = numdata['data'][timeindex,zindex,40,::2]
+
+# %% Plot
+
 SMALL_SIZE = 24
 MEDIUM_SIZE = 28
 BIGGER_SIZE = 32
@@ -117,29 +140,11 @@ plt.rc('xtick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
 plt.rc('ytick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
 plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
 
-
 fig = plt.figure(dpi=300)
 ax = plt.subplot(111)
-##################
 
 ax.plot(xx,res,label='analytical P3')
 ax.plot(xx,res_p1,label='analytical P1')
-
-# numdata = np.load('numerical_data/data_60d_short.npz')
-numdata = np.load('numerical_data/data_60d_long.npz')
-
-timeindex = 5
-time = numdata['t'][timeindex]
-print('Time: {} s'.format(time))
-
-zindex = 0
-# zindex = 40
-z = numdata['z'][zindex]
-print('Depth: {} mm'.format(z))
-
-x = numdata['x'][::2]
-
-data = numdata['data'][timeindex,zindex,40,::2]
 
 ax.plot(x,data,'o',label='numerical',markersize=3)
 ax.set_xlim([-5.0,5.0])
@@ -150,6 +155,5 @@ plt.ylabel('T / K')
 lgd = plt.legend(loc='upper right', bbox_to_anchor=(1.1, 1.01), borderaxespad=0)
 for legobj in lgd.legendHandles:
     legobj.set_linewidth(2.0)
-
 
 plt.show()

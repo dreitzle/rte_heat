@@ -2,7 +2,9 @@
 # coding: utf-8
 
 """
-RTE_heat_3L_thick.py: solution implementation for optically thick slabs
+RTE_heat_3L_thick.py: solution implementation for optically thick slabs.
+It is valid, if the lower RTE source strength is negligible compared to
+the upper one. Then, it saves about half of the computation time.
 """
 
 import numpy as np
@@ -32,13 +34,13 @@ def _src_switch(s):
 # layers
 
 class Layer(NamedTuple):
-    rho:    np.double
-    cp:     np.double
-    k:      np.double
-    musp:   np.double
-    mua:    np.double
-    g:      np.double
-    L:      np.double
+    rho:    np.double # in kg/m^3
+    cp:     np.double # in J/kg/K
+    k:      np.double # in W/m/K
+    musp:   np.double # in 1/mm
+    mua:    np.double # in 1/mm
+    g:      np.double # unitless
+    L:      np.double # in mm
 
 # solution implementation
 
@@ -48,7 +50,7 @@ class rte_heat_3L:
                  f_src=_src_switch, mu1=1.0, NN=100,
                  n=1.5, Rn_file_n='Rn__1-5.npz', Rn_file_1='Rn__1-0_analytic.npz'):
 
-        # Heat conduction parameters
+        # Heat conduction parameters (rescale length units to mm)
 
         self.rho1 = layer1.rho / 1e9
         self.cp1 = layer1.cp
@@ -458,6 +460,12 @@ class rte_heat_3L:
         return Qo,Qu,np.abs(Rtot),np.abs(Ttot),np.abs(A1),np.abs(A2),np.abs(A3),np.abs(B3),np.abs(B2),np.abs(B1)
 
     def calc_laplace_pre_P3(self,q,phiq):
+        """
+        Precompute P3 solution coefficients. This speeds up the solution,
+        since we use the steady state RTE that does not depend on time and
+        therefore the Laplace variable s. One of calc_laplace_pre_P3() and
+        calc_laplace_pre_P1() must be called before calc_laplace()
+        """
 
         q = np.array(q)
         q = q.reshape(q.size,1)
@@ -514,6 +522,12 @@ class rte_heat_3L:
         self.Q3u = 0
 
     def calc_laplace_pre_P1(self,q,phiq):
+        """
+        Precompute P1 solution coefficients. This speeds up the solution,
+        since we use the steady state RTE that does not depend on time and
+        therefore the Laplace variable s. One of calc_laplace_pre_P3() and
+        calc_laplace_pre_P1() must be called before calc_laplace()
+        """
 
         q = np.array(q)
         q = q.reshape(q.size,1)
@@ -570,6 +584,10 @@ class rte_heat_3L:
         self.Q3u = 0
 
     def calc_laplace(self, s, q, phiq, z):
+        """
+        Compute solution. One of calc_laplace_pre_P3() and
+        calc_laplace_pre_P1() must be called before calc_laplace()
+        """
 
         def calc_f(V00,ci,cr,ew,eps,mut,gamma,L,d=1.0):
 
@@ -857,6 +875,9 @@ class rte_heat_3L:
             return res1+res2+res3
 
     def calc_absorbance(self, q, phiq, z):
+        """
+        Compute P3 absorbance only.
+        """
 
         if(z < 0.0 or z > self.lg):
             raise ValueError('z outside medium.')

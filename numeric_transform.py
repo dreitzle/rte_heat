@@ -657,13 +657,12 @@ class test_IHT(unittest.TestCase):
             res2[i] = IHT2(F, prof_id, r[i], 300)
 
         res_ana = f(r)
-        #~ plt.plot(r,res1)
-        #~ plt.plot(r,res2)
+
         plt.plot(r,np.abs(res1-res_ana)/res_ana)
         plt.plot(r,np.abs(res2-res_ana)/res_ana)
         plt.plot(r,res_ana)
         plt.yscale('log')
-        #~ plt.ylim(1e-7,1.0)
+
         plt.show()
 
 class test_ILT_IFT(unittest.TestCase):

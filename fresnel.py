@@ -97,11 +97,9 @@ def calc_R_marshak(n,ms,ls,l):
     # This part vanishes without total reflection or for even orders with
     # total reflection
     if muc > 0.0 and odd:
-        R1 = scipy.integrate.quad(Rint_odd_TR,0.0,muc,limit=500)[0]
-        #~ R1 = scipy.integrate.quadrature(Rint_odd_TR,0.0,muc,maxiter=1000)[0]
+        R1 = scipy.integrate.quadrature(Rint_odd_TR,0.0,muc,maxiter=1000)[0]
 
-    R2 = scipy.integrate.quad(R2func,muc,1.0,limit=500)[0]
-    #~ R2 = scipy.integrate.quadrature(R2func,muc,1.0,maxiter=1000)[0]
+    R2 = scipy.integrate.quadrature(R2func,muc,1.0,maxiter=1000)[0]
 
     return vf*(R1+R2)
 
@@ -157,10 +155,8 @@ def calc_R_marshak_planar(n,ls,l):
     R2 = 0.0
 
     if muc > 0.0 and odd:
-        # R1 = scipy.integrate.quad(Rint_odd_TR,0.0,muc,limit=500)[0]
         R1 = scipy.integrate.quadrature(Rint_odd_TR,0.0,muc,maxiter=1000)[0]
 
-    # R2 = scipy.integrate.quad(R2func,muc,1.0,limit=500)[0]
     R2 = scipy.integrate.quadrature(R2func,muc,1.0,maxiter=1000)[0]
 
     return vf*(R1+R2)
@@ -291,7 +287,6 @@ def save_R_marshak_planar(n,filename,NNmax):
 
     Nmax = 2*NNmax+1
 
-    #~ R = np.empty([Nmax+1,NNmax+1])
     R = np.zeros([Nmax+1,NNmax+1])
 
     class RBar(IncrementalBar):
@@ -303,12 +298,6 @@ def save_R_marshak_planar(n,filename,NNmax):
             return str(timedelta(seconds=self.eta))
 
     bar = RBar('Calculating: n={} N={}'.format(n,NNmax), max=NNmax+1)
-
-    #~ for i in range(NNmax+1):
-        #~ ls = 2*i+1
-        #~ for l in range(Nmax+1):
-            #~ R[l,i] = calc_R(n,0,ls,l)
-        #~ bar.next()
 
     for i in range(NNmax+1):
         for j in np.arange(i,NNmax+1):
